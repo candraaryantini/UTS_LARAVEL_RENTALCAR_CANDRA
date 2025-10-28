@@ -1,0 +1,230 @@
+
+
+<?php $__env->startSection('title', 'Edit Rental - Rental Car'); ?>
+
+<?php $__env->startSection('content'); ?>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+    
+    body {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
+    }
+
+    .form-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: fadeInUp 0.6s ease-out;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .form-header h2 {
+        color: #f5576c;
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+
+    .form-header p {
+        color: #7f8c8d;
+        font-size: 0.95rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 12px 18px;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #f5576c;
+        box-shadow: 0 0 0 0.2rem rgba(245, 87, 108, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+        border: none;
+        color: white;
+        padding: 12px 35px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(245, 87, 108, 0.5);
+        color: white;
+    }
+
+    .btn-cancel {
+        background: linear-gradient(135deg, #6c757d, #495057);
+        border: none;
+        color: white;
+        padding: 12px 35px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .form-container {
+            padding: 25px;
+        }
+    }
+</style>
+
+<div class="container py-5">
+    <div class="form-container">
+        <!-- Header -->
+        <div class="form-header">
+            <h2>✏️ Edit Rental</h2>
+            <p>Perbarui informasi rental</p>
+        </div>
+
+        <!-- Form -->
+        <form action="<?php echo e(route('rentals.update', $rental->id)); ?>" method="POST">
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('PUT'); ?>
+
+            <!-- Pilih Mobil -->
+            <div class="mb-3">
+                <label for="car_id" class="form-label">
+                    <i class="bi bi-car-front-fill me-1"></i> Pilih Mobil
+                </label>
+                <select name="car_id" id="car_id" class="form-select" required>
+                    <option value="">Pilih Mobil</option>
+                    <?php $__currentLoopData = $cars; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $car): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($car->id); ?>" <?php echo e($car->id == $rental->car_id ? 'selected' : ''); ?>>
+                            <?php echo e($car->brand); ?> <?php echo e($car->model); ?> (<?php echo e($car->license_plate); ?>)
+                        </option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
+            </div>
+
+            <!-- Pilih Pelanggan -->
+            <div class="mb-3">
+                <label for="customer_id" class="form-label">
+                    <i class="bi bi-person-fill me-1"></i> Pilih Pelanggan
+                </label>
+                <select name="customer_id" id="customer_id" class="form-select" required>
+                    <option value="">Pilih Pelanggan</option>
+                    <?php $__currentLoopData = $customers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $customer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($customer->id); ?>" <?php echo e($customer->id == $rental->customer_id ? 'selected' : ''); ?>>
+                            <?php echo e($customer->name); ?>
+
+                        </option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
+            </div>
+
+            <!-- Tanggal Rental & Kembali -->
+            <div class="form-row mb-3">
+                <div>
+                    <label for="start_date" class="form-label">
+                        <i class="bi bi-calendar-event me-1"></i> Tanggal Rental
+                    </label>
+                    <input type="date" name="start_date" id="start_date" class="form-control"
+                           value="<?php echo e(old('start_date', $rental->start_date)); ?>" required>
+                </div>
+
+                <div>
+                    <label for="end_date" class="form-label">
+                        <i class="bi bi-calendar-check me-1"></i> Tanggal Kembali
+                    </label>
+                    <input type="date" name="end_date" id="end_date" class="form-control"
+                           value="<?php echo e(old('end_date', $rental->end_date)); ?>" required>
+                </div>
+            </div>
+
+            <!-- Total Harga -->
+            <div class="mb-3">
+                <label for="total_price" class="form-label">
+                    <i class="bi bi-cash-coin me-1"></i> Total Harga (Rp)
+                </label>
+                <input type="number" name="total_price" id="total_price" step="1" class="form-control"
+                       value="<?php echo e(old('total_price', $rental->total_price)); ?>" required>
+            </div>
+
+            <!-- Status -->
+            <div class="mb-4">
+                <label for="status" class="form-label">
+                    <i class="bi bi-check-circle me-1"></i> Status
+                </label>
+                <select name="status" id="status" class="form-select">
+                    <option value="ongoing" <?php echo e($rental->status == 'ongoing' ? 'selected' : ''); ?>>
+                        🟢 Sedang Berlangsung
+                    </option>
+                    <option value="completed" <?php echo e($rental->status == 'completed' ? 'selected' : ''); ?>>
+                        ✅ Selesai
+                    </option>
+                    <option value="cancelled" <?php echo e($rental->status == 'cancelled' ? 'selected' : ''); ?>>
+                        ❌ Dibatalkan
+                    </option>
+                </select>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex gap-3 justify-content-center">
+                <button type="submit" class="btn btn-submit">
+                    <i class="bi bi-check-lg me-2"></i>
+                    Update Rental
+                </button>
+                <a href="<?php echo e(route('rentals.index')); ?>" class="btn btn-cancel">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Batal
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laravel_rentalcar\resources\views/rentals/edit.blade.php ENDPATH**/ ?>
